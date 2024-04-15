@@ -21,11 +21,32 @@ O método sqlBindCol 'liga' o buffer da coluna com o sqlHandle, dessa forma, os 
   <code>sqlExecute(hStmt);
 
   while (sqlFetch(hStmt) != SQL_NO_DATA_FOUND) {
+
         print("${col1.peek()} ${col2.peek()} ${col3.peek()} ${col4.peek()} ");
-  }</code>
+  }
+  </code>
+
+## Resumo - ORM com Dart e Flutter
+
+Para flutter, indica-se o uso do pacote ORM. Ele utiliza a engine do Prisma para fazer o tratamento de objetos vindos do banco de dados. Talvez seja importante ressaltar que o pacote é Open Source e não é ligado ao Prisma Data Inc., mas faz parte do ecossistema Prisma.
+Para instalar o ORM no projeto escolhido, basta ter o Node.js instalado, e executar os comandos:
+
+<code>npm install prisma</code>
+<code>dart pub add orm</code>
+<code>npx prisma init --generator-provider="dart run orm" --datasource-provider=postgresql</code>
+
+Depois, basta configurar os arquivos .env e schema.prisma criados na raiz do projeto. O .env é o arquivo que armazena as variáveis de ambiente, como endereço do banco, user e password. Já o schema.prisma define os modelos que serão utilizados do Banco de Dados.
+Depois de configurado, basta usarmos <code>npx prisma generate</code>. 
+
+Esse comando criará os arquivos client.dart, prisma.dart e model.dart. O client.dart guarda as implementações do Prisma Client, o prisma.dart guarda os tipos que o Prisma gera automaticamente, enquanto o model.dart guarda os models, views e enums a serem utilizados.
+O Prisma recomenda usar todos os recursos junto com try/catch/finally, para tratar quaisquer erros de conexão com o banco.
 
 ## Referências
 
 <a href="https://pub.dev/packages/odbc">Página do ODBC no Pub.dev</a>
 
 <a href="https://stackoverflow.com/questions/25750834/how-to-use-odbc-binding-for-dart">Tutorial de uso do ODBC do Dart</a>
+
+<a href="https://prisma.pub">Site e documentação do Prisma Client Dart</a>
+
+<a href="https://pub.dev/packages/orm">Pàgina do ORM no Pub.dev</a>
