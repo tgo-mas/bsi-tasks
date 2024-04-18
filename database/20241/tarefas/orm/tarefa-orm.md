@@ -42,7 +42,9 @@ Esse comando criará os arquivos client.dart, prisma.dart e model.dart. O client
 O Prisma recomenda usar todos os recursos junto com try/catch/finally, para tratar quaisquer erros de conexão com o banco.
 
 ## Outras questões
-### Questão 4
+### Questão 4 
+
+Código em Dart:
 ```
 import 'package:odbc/odbc.dart';
 
@@ -95,8 +97,62 @@ void main() {
    sqlFreeHandle(SQL_HANDLE_ENV, hEnv);
 }
 ```
+
 Obs.: Esse programa é antigo e não foi criado por mim. Está no tutorial do uso do ODBC para Dart. Não criei pois o pacote não é mais compatível com a versão atual do Dart.
 
+### Questão 6
+
+O Dart possui um ORM ainda em construção, que não funciona tão bem, por ser uma linguagem recente e focada no front-end de aplicações. O Prisma Client Dart é uma adaptação que utiliza a implementação nativa do Prisma (Node.js) e o integra com projetos Dart.
+
+Para realizar a migração do banco, deve-se editar o schema.prisma após as devidas instalações para colocar o postgresql, e o endereço correto do banco no .env.
+
+```
+generator client {
+  provider = "dart run orm"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+```
+
+Após isso, executamos o comando npx prisma db pull, que vai 'puxar' o banco de dados já feito do servidor do PostgreSQL.
+
+Depois, podemos fazer as operações:
+
+a. Inserir uma atividade em algum projeto:
+```
+final atividade = await prisma.atividade.create(
+  data: PrismaUnion.$1(AtividadeCreateInput(
+    descricao: PrismaUnion.$1("Uma atividade de um projeto"),
+    projeto: PrismaUnion.$1(2),
+    dataInicio: PrismaUnion.$1("2024-04-18"),
+    dataFim: PrismaUnion.$1("2024-04-20"),
+  )),
+);
+```
+b. Atualizar o líder de algum projeto:
+```
+final novoProjeto = await prisma.projeto.update(
+  where: ProjetoWhereUniqueInput(responsavel: 1),
+  data: PrismaUnion.$2(
+    ProjetoUncheckedUpdateInput(
+      responsavel: PrismaUnion.$1(2),
+    ),
+  ),
+);
+```
+c. Listar todos os projetos e suas atividades:
+```
+final projetos = await prisma.projeto.findMany(
+  include: ProjetoInclude(
+    atividade: PrismaUnion.$1(true),
+  ),
+);
+```
+
+Obs.: A experiência de uso do Prisma Client Dart não é muito prática e eu não recomendo :(
 
 ## Referências
 
